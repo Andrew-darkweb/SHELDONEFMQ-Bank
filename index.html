@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHELDONE-FMQ Bank</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #000;
+            color: #00ff00;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        h1 {
+            color: #00ff00;
+            text-align: center;
+            border-bottom: 2px solid #00ff00;
+            padding-bottom: 10px;
+        }
+        
+        .debt-container {
+            background-color: #111;
+            border: 1px solid #00ff00;
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .debt-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        
+        .debt-amount {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .paid-amount {
+            font-size: 20px;
+            color: #00cc00;
+        }
+        
+        .remaining-amount {
+            font-size: 22px;
+            color: #ff5555;
+        }
+        
+        .goal-section {
+            margin-bottom: 20px;
+        }
+        
+        .goal-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .goal-description {
+            font-style: italic;
+            color: #00cc00;
+        }
+        
+        .payment-section {
+            background-color: #111;
+            border: 1px solid #00ff00;
+            border-radius: 5px;
+            padding: 20px;
+        }
+        
+        .input-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        input[type="text"],
+        input[type="number"] {
+            background-color: #222;
+            border: 1px solid #00ff00;
+            color: #00ff00;
+            padding: 8px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        button {
+            background-color: #003300;
+            color: #00ff00;
+            border: 1px solid #00ff00;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        button:hover {
+            background-color: #00ff00;
+            color: #000;
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .add-btn {
+            background-color: #005500;
+        }
+        
+        .pay-btn {
+            background-color: #007700;
+        }
+    </style>
+</head>
+<body>
+    <h1>Трекер кредита</h1>
+    
+    <div class="debt-container">
+        <div class="debt-info">
+            <div>
+                <div>Общая сумма кредита:</div>
+                <div class="debt-amount" id="total-debt">0 $</div>
+            </div>
+            <div>
+                <div>Уже внесено:</div>
+                <div class="paid-amount" id="paid-amount">0 $</div>
+            </div>
+            <div>
+                <div>Осталось внести:</div>
+                <div class="remaining-amount" id="remaining-amount">0 $</div>
+            </div>
+        </div>
+        
+        <div class="goal-section">
+            <div class="goal-title">Цель кредита:</div>
+            <div class="goal-description" id="goal-description">Не указана</div>
+        </div>
+    </div>
+    
+    <div class="payment-section">
+        <h2>Управление кредитом</h2>
+        
+        <div class="input-group">
+            <label for="goal-input">Изменить цель кредита:</label>
+            <input type="text" id="goal-input" placeholder="Введите цель кредита">
+            <button onclick="updateGoal()">Обновить цель</button>
+        </div>
+        
+        <div class="input-group">
+            <label for="add-debt-input">Добавить к сумме кредита:</label>
+            <input type="number" id="add-debt-input" placeholder="Введите сумму">
+            <button class="add-btn" onclick="addToDebt()">Добавить к кредиту</button>
+        </div>
+        
+        <div class="input-group">
+            <label for="payment-input">Внести платеж:</label>
+            <input type="number" id="payment-input" placeholder="Введите сумму платежа">
+            <div class="buttons">
+                <button class="pay-btn" onclick="makePayment(30000)">Внести 30000 $</button>
+                <button class="pay-btn" onclick="makePayment(50000)">Внести 50000 $</button>
+                <button class="pay-btn" onclick="makePaymentCustom()">Внести указанную сумму</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let totalDebt = 2000000;
+        let paidAmount = 250000;
+        
+        function updateDisplay() {
+            document.getElementById('total-debt').textContent = totalDebt + ' $';
+            document.getElementById('paid-amount').textContent = paidAmount + ' $';
+            document.getElementById('remaining-amount').textContent = (totalDebt - paidAmount) + ' $';
+        }
+        
+        function updateGoal() {
+            const goalInput = document.getElementById('goal-input');
+            if (goalInput.value.trim() !== '') {
+                document.getElementById('goal-description').textContent = goalInput.value;
+                goalInput.value = '';
+            }
+        }
+        
+        function addToDebt() {
+            const addDebtInput = document.getElementById('add-debt-input');
+            const amount = parseFloat(addDebtInput.value);
+            
+            if (!isNaN(amount) && amount > 0) {
+                totalDebt += amount;
+                updateDisplay();
+                addDebtInput.value = '';
+            }
+        }
+        
+        function makePayment(amount) {
+            if (typeof amount !== 'number') {
+                const paymentInput = document.getElementById('payment-input');
+                amount = parseFloat(paymentInput.value);
+            }
+            
+            if (!isNaN(amount) && amount > 0) {
+                if (paidAmount + amount > totalDebt) {
+                    alert('Сумма платежа превышает оставшуюся суммму!');
+                    return;
+                }
+                
+                paidAmount += amount;
+                updateDisplay();
+                document.getElementById('payment-input').value = '';
+            }
+        }
+        
+        function makePaymentCustom() {
+            makePayment();
+        }
+        
+        // Инициализация
+        updateDisplay();
+    </script>
+</body>
+</html>
